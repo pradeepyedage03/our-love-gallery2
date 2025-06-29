@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery of Us 💖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a0a2e 50%, #16213e 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Ambient border glow */
+        .ambient-border {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff, #06ffa5) 1;
+            animation: borderPulse 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { filter: brightness(1) blur(0px); }
+            50% { filter: brightness(1.5) blur(1px); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #fff, transparent);
+            border-radius: 50%;
+            animation: float 8s linear infinite;
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: #ff006e;
+            font-size: 12px;
+            animation: heartFloat 6s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes heartFloat {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            10% { opacity: 0.7; }
+            50% { transform: translateY(50vh) scale(1); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+        }
+
+        /* Gallery styles */
+        .gallery-container {
+            position: relative;
+            z-index: 10;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px;
+            margin: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 20px 40px rgba(255, 0, 110, 0.3);
+            border-color: #ff006e;
+        }
+
+        .gallery-card.neon-frame {
+            animation: neonGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            0% { box-shadow: 0 0 20px #ff006e, 0 0 40px #ff006e, 0 0 60px #ff006e; }
+            100% { box-shadow: 0 0 30px #8338ec, 0 0 50px #8338ec, 0 0 70px #8338ec; }
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .mystery-image {
+            filter: blur(10px);
+            transition: filter 0.5s ease;
+        }
+
+        .mystery-image:hover {
+            filter: blur(5px);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(131, 56, 236, 0.2));
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #ff006e;
+            box-shadow: 0 0 50px rgba(255, 0, 110, 0.5);
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .typewriter {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #fff;
+            border-right: 2px solid #ff006e;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { border-color: #ff006e; }
+            51%, 100% { border-color: transparent; }
+        }
+
+        /* Love notes drawer */
+        .love-drawer {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.3), rgba(131, 56, 236, 0.3));
+            backdrop-filter: blur(20px);
+            transition: right 0.3s ease;
+            z-index: 1500;
+            padding: 2rem;
+            border-left: 2px solid #ff006e;
+        }
+
+        .love-drawer.open {
+            right: 0;
+        }
+
+        .love-note {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #ff006e;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .love-note:hover {
+            background: rgba(255, 0, 110, 0.2);
+            transform: scale(1.05);
+        }
+
+        .love-note.special {
+            animation: specialGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes specialGlow {
+            0% { box-shadow: 0 0 20px #06ffa5; }
+            100% { box-shadow: 0 0 30px #3a86ff; }
+        }
+
+        /* Quote carousel */
+        .quote-carousel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            font-size: 1rem;
+            color: #ff006e;
+            z-index: 100;
+        }
+
+        /* Surprise box */
+        .surprise-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(15deg) rotateY(15deg);
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: boxFloat 3s ease-in-out infinite;
+            z-index: 2000;
+            display: none;
+        }
+
+        .surprise-box:hover {
+            transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) scale(1.1);
+        }
+
+        @keyframes boxFloat {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+            50% { transform: translate(-50%, -50%) translateY(-10px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-container {
+                padding: 1rem;
+            }
+            
+            .gallery-card {
+                margin: 10px 0;
+            }
+            
+            .love-drawer {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient border -->
+    <div class="ambient-border"></div>
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="text-center py-8 relative z-10">
+        <h1 class="text-5xl font-bold mb-4" style="font-family: 'Pacifico', cursive; background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Gallery of Us 💖
+        </h1>
+        <p class="text-xl text-gray-300">Every photo tells our story</p>
+        
+        <!-- Control buttons -->
+        <div class="mt-6 space-x-4">
+            <button id="loveNotesBtn" class="bg-gradient-to-r from-pink-500 to-purple-500 px-6 py-2 rounded-full hover:scale-105 transition-all">
+                💌 Love Notes
+            </button>
+            <button id="slideshowBtn" class="bg-gradient-to-r from-blue-500 to-green-500 px-6 py-2 rounded-full hover:scale-105 transition-all">
+                🔁 Autoplay Memories
+            </button>
+            <button id="heartBurstBtn" class="bg-gradient-to-r from-red-500 to-pink-500 px-6 py-2 rounded-full hover:scale-105 transition-all">
+                💘 Heart Burst
+            </button>
+        </div>
+    </header>
+
+    <!-- Gallery -->
+    <div class="gallery-container">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="gallery">
+            <!-- Gallery items will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close text-2xl float-right cursor-pointer hover:text-red-500">&times;</span>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <div id="modalText" class="typewriter"></div>
+            <div class="mt-4 text-center">
+                <button id="audioBtn" class="bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 rounded-full hover:scale-105 transition-all mr-2">
+                    🔊 Play Memory
+                </button>
+                <button id="reliveBtn" class="bg-gradient-to-r from-green-500 to-blue-500 px-4 py-2 rounded-full hover:scale-105 transition-all">
+                    💫 Wanna relive this again?
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Love Notes Drawer -->
+    <div id="loveDrawer" class="love-drawer">
+        <h3 class="text-2xl font-bold mb-4 text-center" style="font-family: 'Pacifico', cursive;">Love Notes 💌</h3>
+        <div class="love-note">
+            <p>Every moment with you feels like a fairytale ✨</p>
+        </div>
+        <div class="love-note special">
+            <p>It’s not just time we spend together — it’s memories we quietly write into forever. 🕊️</p>
+        </div>
+        <div class="love-note">
+            <p>Your smile is my favorite notification 😊</p>
+        </div>
+        <div class="love-note">
+            <p>With you, even the smallest moments feel like chapters from a love story." 📖💖</p>
+        </div>
+        <div class="love-note">
+            <p>We're creating memories that will last forever 💕</p>
+        </div>
+    </div>
+
+    <!-- Surprise Box -->
+    <div id="surpriseBox" class="surprise-box">
+        <div class="flex items-center justify-center h-full text-4xl">🎁</div>
+    </div>
+
+    <!-- Quote Carousel -->
+    <div class="quote-carousel" id="quoteCarousel">
+        "We didn't meet by accident. We met to make magic." ✨
+    </div>
+
+    <script>
+        // Sample data - replace with your actual photos and memories
+        const memories = [
+            {
+                image: "img1.jpg",
+                title: "formal's day 👀",
+                memory: "In a world full of fleeting days, this formal one with you turned into a memory that’s here to stay.💕"
+            },
+            {
+                image: "img3.jpg",
+                title: "Mi Vida 💕💕",
+                memory: "College gardens, endless talks, and a bond that blooms like the trees. 🌳🌺🌹"
+            },
+            {
+                image: "img5.jpg",
+                title: "Garba Day 🕺🏻💃🏻",
+                memory: "Amidst the colors and chaos of Garba, our eyes met — and in that moment, nothing else mattered.❤️👀"
+            },
+            {
+                image: "img9.jpg",
+                title: "Iskon Temple 🙏🏻",
+                memory: "The day we visited ISKCON Temple — not just to seek blessings, but to silently pray for a future where we stay together, always.🙏🏻🫰"
+            },
+            {
+                image: "img10.jpg",
+                title: "Wearing Red 💕",
+                memory: "Coincidentally twinning in red, but always syncing in energy — that’s just our thing.🌹👫"
+            },
+            {
+                image: "img12.jpg",
+                title: "Last Presentation 😘😍",
+                memory: "That last presentation day — I stayed quiet, wanting a picture with her. But when it finally happened, it was worth the wait… we both lit up that frame effortlessly.😁😇",
+                isBlurred: true,
+                isSurprise: true
+            }
+        ];
+
+        const quotes = [
+            "We didn't meet by accident. We met to make magic. ✨",
+            "Every love story is beautiful, but ours is my favorite. 💕",
+            "Together is our favorite place to be. 🏠",
+            "You're my today and all of my tomorrows. 🌅",
+            "In a sea of people, my eyes will always search for you. 👀💝"
+        ];
+
+        let currentQuoteIndex = 0;
+        let isSlideshow = false;
+        let slideshowInterval;
+
+        // Initialize the gallery
+        function initGallery() {
+            const gallery = document.getElementById('gallery');
+            
+            memories.forEach((memory, index) => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card neon-frame';
+                card.innerHTML = `
+                    <img src="${memory.image}" alt="${memory.title}" class="gallery-image ${memory.isBlurred ? 'mystery-image' : ''}" data-index="${index}">
+                    <h3 class="text-xl font-bold mt-3 text-center">${memory.title}</h3>
+                    ${memory.isSurprise ? '<p class="text-center text-sm text-yellow-300">Click to reveal! 🎁</p>' : ''}
+                `;
+                
+                card.addEventListener('click', () => openModal(index));
+                gallery.appendChild(card);
+            });
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            
+            // Star particles
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                particles.appendChild(particle);
+            }
+            
+            // Heart particles
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                heart.innerHTML = '💕';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 6 + 's';
+                heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                particles.appendChild(heart);
+            }
+        }
+
+        // Open modal with memory
+        function openModal(index) {
+            const memory = memories[index];
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modalImage');
+            const modalText = document.getElementById('modalText');
+            
+            modalImage.src = memory.image;
+            modalText.innerHTML = '';
+            modal.style.display = 'block';
+            
+            // Remove blur effect if it's a surprise
+            if (memory.isBlurred) {
+                modalImage.classList.remove('mystery-image');
+                modalImage.style.filter = 'none';
+            }
+            
+            // Typewriter effect
+            typeWriter(memory.memory, modalText);
+            
+            // Show surprise box after revealing mystery
+            if (memory.isSurprise) {
+                setTimeout(() => {
+                    document.getElementById('surpriseBox').style.display = 'block';
+                }, 3000);
+            }
+        }
+
+        // Typewriter effect
+        function typeWriter(text, element) {
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                }
+            }
+            type();
+        }
+
+        // Quote carousel
+        function rotateQuotes() {
+            const carousel = document.getElementById('quoteCarousel');
+            setInterval(() => {
+                carousel.style.opacity = '0';
+                setTimeout(() => {
+                    currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                    carousel.textContent = quotes[currentQuoteIndex];
+                    carousel.style.opacity = '1';
+                }, 500);
+            }, 4000);
+        }
+
+        // Heart burst effect
+        function createHeartBurst(x, y) {
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '💖';
+                heart.style.position = 'fixed';
+                heart.style.left = x + 'px';
+                heart.style.top = y + 'px';
+                heart.style.pointerEvents = 'none';
+                heart.style.fontSize = '20px';
+                heart.style.zIndex = '3000';
+                heart.style.animation = `heartBurst 1s ease-out forwards`;
+                
+                const angle = (Math.PI * 2 * i) / 10;
+                const distance = 100;
+                heart.style.setProperty('--end-x', Math.cos(angle) * distance + 'px');
+                heart.style.setProperty('--end-y', Math.sin(angle) * distance + 'px');
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 1000);
+            }
+        }
+
+        // Add heart burst animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes heartBurst {
+                0% {
+                    transform: translate(0, 0) scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(var(--end-x), var(--end-y)) scale(0);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Slideshow functionality
+        function startSlideshow() {
+            if (isSlideshow) return;
+            
+            isSlideshow = true;
+            let currentIndex = 0;
+            
+            slideshowInterval = setInterval(() => {
+                openModal(currentIndex);
+                currentIndex = (currentIndex + 1) % memories.length;
+                
+                setTimeout(() => {
+                    document.getElementById('modal').style.display = 'none';
+                }, 3000);
+            }, 4000);
+            
+            document.getElementById('slideshowBtn').textContent = '⏹️ Stop Slideshow';
+        }
+
+        function stopSlideshow() {
+            if (!isSlideshow) return;
+            
+            clearInterval(slideshowInterval);
+            isSlideshow = false;
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('slideshowBtn').textContent = '🔁 Autoplay Memories';
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initGallery();
+            createParticles();
+            rotateQuotes();
+            
+            // Modal close
+            document.querySelector('.close').addEventListener('click', () => {
+                document.getElementById('modal').style.display = 'none';
+            });
+            
+            // Click outside modal to close
+            document.getElementById('modal').addEventListener('click', (e) => {
+                if (e.target.id === 'modal') {
+                    document.getElementById('modal').style.display = 'none';
+                }
+            });
+            
+            // Love notes drawer
+            document.getElementById('loveNotesBtn').addEventListener('click', () => {
+                document.getElementById('loveDrawer').classList.toggle('open');
+            });
+            
+            // Slideshow toggle
+            document.getElementById('slideshowBtn').addEventListener('click', () => {
+                if (isSlideshow) {
+                    stopSlideshow();
+                } else {
+                    startSlideshow();
+                }
+            });
+            
+            // Heart burst button
+            document.getElementById('heartBurstBtn').addEventListener('click', (e) => {
+                createHeartBurst(e.clientX, e.clientY);
+            });
+            
+            // Click anywhere for heart burst
+            document.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'BUTTON' && !e.target.closest('.modal-content') && !e.target.closest('.love-drawer')) {
+                    const hearts = ['💖', '💕', '💝', '💗', '💓'];
+                    const randomHeart = hearts[Math.floor(Math.random() * hearts.length)];
+                    
+                    const heart = document.createElement('div');
+                    heart.innerHTML = randomHeart;
+                    heart.style.position = 'fixed';
+                    heart.style.left = e.clientX + 'px';
+                    heart.style.top = e.clientY + 'px';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.fontSize = '24px';
+                    heart.style.zIndex = '3000';
+                    heart.style.animation = 'heartFloat 2s ease-out forwards';
+                    
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 2000);
+                }
+            });
+            
+            // Love note interactions
+            document.querySelectorAll('.love-note').forEach(note => {
+                note.addEventListener('click', () => {
+                    if (note.classList.contains('special')) {
+                        alert('💖 Coupon Redeemed! One cuddle session coming right up! 🤗');
+                        note.style.background = 'rgba(6, 255, 165, 0.3)';
+                        note.innerHTML = '<p>✅ Redeemed! Cuddle session pending... 🤗</p>';
+                    } else if (note.textContent.includes('Kiss Voucher')) {
+                        alert('💋 Kiss voucher activated! This weekend just got sweeter! 😘');
+                        note.style.background = 'rgba(255, 0, 110, 0.3)';
+                    } else {
+                        createHeartBurst(window.innerWidth - 150, note.offsetTop + 50);
+                    }
+                });
+            });
+            
+            // Surprise box
+            document.getElementById('surpriseBox').addEventListener('click', () => {
+                alert('🎁 Surprise unlocked! A romantic weekend getaway awaits... Check your messages! 💕');
+                document.getElementById('surpriseBox').style.display = 'none';
+            });
+            
+            // Modal buttons
+            document.getElementById('audioBtn').addEventListener('click', () => {
+                alert('🎵 Playing your favorite song... (Audio feature would play recorded message here)');
+            });
+            
+            document.getElementById('reliveBtn').addEventListener('click', () => {
+                alert('💫 Let\'s make this memory again... soon! 💕');
+            });
+            
+            // Mouse tilt effect for gallery cards
+            document.addEventListener('mousemove', (e) => {
+                const cards = document.querySelectorAll('.gallery-card');
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = (y - centerY) / 10;
+                        const rotateY = (centerX - x) / 10;
+                        
+                        card.style.transform = `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    }
+                });
+            });
+        });
+
+        // Vibration API for mobile
+        if ('vibrate' in navigator) {
+            document.addEventListener('touchstart', () => {
+                navigator.vibrate(50);
+            });
+        }
+    </script>
+</body>
+</html>
